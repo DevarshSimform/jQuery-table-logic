@@ -6,47 +6,59 @@ $(document).ready( function() {
 
     const data_url = 'https://jsonplaceholder.typicode.com/comments'
 
+    function renderTableHead() {
+        $("#dataTable").html(`
+            <thead id="table-head">
+                <tr>
+                    <th scope="col">Post ID</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        `);
+    }
+
+
+    function renderTableBody(data) {
+        data.forEach(element => {
+            $('#tableBody').append(`
+                <tr>
+                    <td>${element.postId}</td>
+                    <td>${element.id}</td>
+                    <td class="api-name">${element.name}</td>
+                    <td>${element.email}</td>
+                    <td> <button type="button" class="btn btn-secondary" id="${element.id}">View body</button> </td>
+                </tr>
+            `)
+        });
+    }
+
+    function bodyViewButton(data) {
+        data.forEach(element => {
+            $(`#${element.id}`).on('click',function() {
+                alert(`${element.body}`)  
+            })
+        });
+    }
+
+
     $.ajax({
         url: data_url,
         method: "GET",
 
         success: function(data) {
-
-            $('#dataTable').html(`
-                <thead id="table-head">
-                <tr>
-                    <th scope="col">postId</th>
-                    <th scope="col">id</th>
-                    <th scope="col">name</th>
-                    <th scope="col">email</th>
-                    <th scope="col">buttons</th>
-                </tr>
-                </thead>
-                <tbody id="tableBody">
-              
-                </tbody>
-            `)
-
-            data.forEach(element => {
-                $('#tableBody').append(`
-                    <tr>
-                        <td>${element.postId}</td>
-                        <td>${element.id}</td>
-                        <td class="api-name">${element.name}</td>
-                        <td>${element.email}</td>
-                        <td> <button type="button" class="btn btn-secondary" id="${element.id}">View body</button> </td>
-                    </tr>
-                `)
-            });
+            
+            renderTableHead();
+            renderTableBody(data);
 
             // To see body-content
-            data.forEach(element => {
-                $(`#${element.id}`).on('click',function() {
-                    alert(`${element.body}`)  
-                })
-            });
-   
+            bodyViewButton(data);
 
+            paginationContent(1, data);
+   
         },
 
         error: function(error) {
